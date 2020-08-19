@@ -81,13 +81,13 @@ const HomeScreen = React.memo(() => {
             name={'Trending anime'}
             compProp={state.top.trendingAnime}
           />
-          <HomeSlider
+          {/* <HomeSlider
             name={'Trending Movie'}
             compProp={state.top.trendingMovie}
           />
           <HomeSlider name={'Top anime'} compProp={state.top.topAnime} />
           <HomeSlider name={'Top manga'} compProp={state.top.topManga} />
-          <HomeSlider name={'Top movie'} compProp={state.top.topMovie} />
+          <HomeSlider name={'Top movie'} compProp={state.top.topMovie} /> */}
         </ScrollView>
       )}
     </View>
