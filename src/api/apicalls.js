@@ -1,8 +1,8 @@
-export const TopAnime = async (type = 'ANIME', sortType, format) => {
+export const TopAnime = async (type = 'ANIME', sortType, format, page) => {
   let query = `
 {
   
-  Page(page: 1, perPage: 50) {
+  Page(page: ${page}, perPage: 20) {
     
    media(type: ${type},sort: ${sortType},format: ${format}) {
 
@@ -43,24 +43,7 @@ export const TopAnime = async (type = 'ANIME', sortType, format) => {
   const res = await response.json();
   return res.data;
 };
-//37510
-// reviews {
-//   edges {
-//     node {
-//       id
-//       ratingAmount
-//       score
-//       rating
-//       summary
-//     }
-//   }
-// }
 
-// characters {
-//   edges {
-//     id
-//   }
-// }
 export const getAnime = async (id) => {
   let query = `
   {

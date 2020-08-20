@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {
   View,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  SafeAreaView,
 } from 'react-native';
 import HomeSlider from '../Components/Home/HomeSlider';
 import {deviceWidth, deviceHeight} from '../api/Constants';
@@ -18,7 +19,8 @@ import {useNavigation} from '@react-navigation/native';
 
 const HomeScreen = React.memo(() => {
   const navigation = useNavigation();
-  console.log('HomeScreen');
+  console.log('HomeScreen1');
+  const [page, setPage] = useState(1);
 
   const [state, setState] = useState({
     top: {
@@ -31,17 +33,40 @@ const HomeScreen = React.memo(() => {
       trendingMovie: null,
     },
   });
-  useEffect(() => {
-    const fetchData = async () => {
-      const topAnime = await TopAnime('ANIME', 'SCORE_DESC', 'TV');
-      const topMovie = await TopAnime('ANIME', 'SCORE_DESC', 'MOVIE');
-      const topManga = await TopAnime('MANGA', 'FAVOURITES_DESC', 'MANGA');
-      const trendingAnime = await TopAnime('ANIME', 'TRENDING_DESC', 'TV');
-      const trendingMovie = await TopAnime('ANIME', 'TRENDING_DESC', 'MOVIE');
-      console.log(topAnime);
+  const fetchData = useCallback(() => {
+    async () => {
+      console.log('fetchdataCalled');
+      const topAnime = await TopAnime('ANIME', 'SCORE_DESC', 'TV', `${page}`);
+      console.log('topAnime' + topAnime);
+      const topMovie = await TopAnime(
+        'ANIME',
+        'SCORE_DESC',
+        'MOVIE',
+        `${page}`,
+      );
+      const topManga = await TopAnime(
+        'MANGA',
+        'FAVOURITES_DESC',
+        'MANGA',
+        `${page}`,
+      );
+      const trendingAnime = await TopAnime(
+        'ANIME',
+        'TRENDING_DESC',
+        'TV',
+        `${page}`,
+      );
+      const trendingMovie = await TopAnime(
+        'ANIME',
+        'TRENDING_DESC',
+        'MOVIE',
+        `${page}`,
+      );
+      console.log(topAnime.Page.media);
       setState({
         top: {
-          topAnime: topAnime,
+          // topAnime: [...state.top.topAnime, topAnime],
+          topAnime: [...state.top.topAnime, topAnime.Page.media],
           topManga: topManga,
           topMovie: topMovie,
           trendingAnime: trendingAnime,
@@ -49,9 +74,19 @@ const HomeScreen = React.memo(() => {
         },
       });
     };
+  }, [page, state.top.topAnime]);
 
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const handleEnd = () => {
+    setPage((pages) => {
+      console.log(pages);
+      pages + 1;
+    });
+    console.log('handleEndCalled');
+  };
   return (
     <View style={styles.homeContainer}>
       <View style={styles.navbarConatiner}>
@@ -75,11 +110,12 @@ const HomeScreen = React.memo(() => {
         </View>
       </View>
 
-      {state.top.topMovie && (
-        <ScrollView style={styles.ScrollView}>
+      {state.top.topMovie ? (
+        <ScrollView>
           <HomeSlider
             name={'Trending anime'}
             compProp={state.top.trendingAnime}
+            handleEnd={handleEnd}
           />
           {/* <HomeSlider
             name={'Trending Movie'}
@@ -89,7 +125,7 @@ const HomeScreen = React.memo(() => {
           <HomeSlider name={'Top manga'} compProp={state.top.topManga} />
           <HomeSlider name={'Top movie'} compProp={state.top.topMovie} /> */}
         </ScrollView>
-      )}
+      ) : null}
     </View>
   );
 });
@@ -98,7 +134,7 @@ const styles = EStyleSheet.create({
   homeContainer: {
     flex: 1,
     backgroundColor: '$baseColor',
-    marginBottom: '5rem',
+    marginBottom: '30rem',
   },
   appName: {
     flex: 3,
@@ -109,10 +145,12 @@ const styles = EStyleSheet.create({
   },
   searchContainer: {
     flex: 1,
+    marginRight: '1rem',
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   navbarConatiner: {
+    marginBottom: '10rem',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -122,12 +160,8 @@ const styles = EStyleSheet.create({
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.9,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 5,
     shadowColor: 'black',
-    marginBottom: '15rem',
-  },
-  ScrollView: {
-    //marginBottom: '10rem',
   },
 });
 
