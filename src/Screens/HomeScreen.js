@@ -6,13 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
-  SafeAreaView,
 } from 'react-native';
 import HomeSlider from '../Components/Home/HomeSlider';
 import {deviceWidth, deviceHeight} from '../api/Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {TopAnime} from '../api/apicalls';
+import useAnimeHome from '../api/apicalls';
 //import SafeAreaView from 'react-native-safe-area-view';
 // import {SafeAreaView} from 'react-navigation';
 import {useNavigation} from '@react-navigation/native';
@@ -20,71 +20,13 @@ import {useNavigation} from '@react-navigation/native';
 const HomeScreen = React.memo(() => {
   const navigation = useNavigation();
   console.log('HomeScreen1');
-  const [page, setPage] = useState(1);
 
-  const [state, setState] = useState({
-    top: {
-      topAnime: null,
-      topManga: null,
-      upcoming: null,
-      topMovie: null,
-      airing: null,
-      trendingAnime: null,
-      trendingMovie: null,
-    },
-  });
-  const fetchData = useCallback(() => {
-    async () => {
-      console.log('fetchdataCalled');
-      const topAnime = await TopAnime('ANIME', 'SCORE_DESC', 'TV', `${page}`);
-      console.log('topAnime' + topAnime);
-      const topMovie = await TopAnime(
-        'ANIME',
-        'SCORE_DESC',
-        'MOVIE',
-        `${page}`,
-      );
-      const topManga = await TopAnime(
-        'MANGA',
-        'FAVOURITES_DESC',
-        'MANGA',
-        `${page}`,
-      );
-      const trendingAnime = await TopAnime(
-        'ANIME',
-        'TRENDING_DESC',
-        'TV',
-        `${page}`,
-      );
-      const trendingMovie = await TopAnime(
-        'ANIME',
-        'TRENDING_DESC',
-        'MOVIE',
-        `${page}`,
-      );
-      console.log(topAnime.Page.media);
-      setState({
-        top: {
-          // topAnime: [...state.top.topAnime, topAnime],
-          topAnime: [...state.top.topAnime, topAnime.Page.media],
-          topManga: topManga,
-          topMovie: topMovie,
-          trendingAnime: trendingAnime,
-          trendingMovie: trendingMovie,
-        },
-      });
-    };
-  }, [page, state.top.topAnime]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // const [page,setPage] = useState(1);
 
   const handleEnd = () => {
-    setPage((pages) => {
-      console.log(pages);
-      pages + 1;
-    });
+    // setPage((pages) => {
+    //   return pages + 1;
+    // });
     console.log('handleEndCalled');
   };
   return (
@@ -110,7 +52,7 @@ const HomeScreen = React.memo(() => {
         </View>
       </View>
 
-      {state.top.topMovie ? (
+      {state.top.topAnime ? (
         <ScrollView>
           <HomeSlider
             name={'Trending anime'}
@@ -121,9 +63,13 @@ const HomeScreen = React.memo(() => {
             name={'Trending Movie'}
             compProp={state.top.trendingMovie}
           />
-          <HomeSlider name={'Top anime'} compProp={state.top.topAnime} />
           <HomeSlider name={'Top manga'} compProp={state.top.topManga} />
-          <HomeSlider name={'Top movie'} compProp={state.top.topMovie} /> */}
+          <HomeSlider name={'Top movie'} compProp={state.top.topMovie} />
+          <HomeSlider
+            name={'Top anime'}
+            handleEnd={handleEnd}
+            compProp={state.top.topAnime}
+          /> */}
         </ScrollView>
       ) : null}
     </View>

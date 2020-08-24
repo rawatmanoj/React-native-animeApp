@@ -16,7 +16,8 @@ import {useDispatch} from 'react-redux';
 
 const HomeSlider = React.memo(
   ({compProp, name, handleEnd}) => {
-    console.log('comprop' + compProp.Page);
+    console.log('homeSlider');
+    //console.log(compProp);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -62,9 +63,9 @@ const HomeSlider = React.memo(
           horizontal={true}
           onEndReached={() => handleEnd()}
           onEndReachedThreshold={0.3}
-          data={compProp.Page.media}
+          data={compProp}
           renderItem={renderItem}
-          keyExtractor={(item) => {
+          keyExtractor={(item, i) => {
             return item.id.toString();
           }}
         />

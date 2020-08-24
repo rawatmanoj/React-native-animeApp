@@ -41,7 +41,7 @@ export const TopAnime = async (type = 'ANIME', sortType, format, page) => {
 
   const response = await fetch(url, options);
   const res = await response.json();
-  return res.data;
+  return res.data.Page.media;
 };
 
 export const getAnime = async (id) => {
