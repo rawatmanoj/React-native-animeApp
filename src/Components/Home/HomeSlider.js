@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Image} from 'react-native-elements';
 import {shortAnimeName} from '../../api/utils';
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -13,15 +13,29 @@ import {
 import {deviceHeight, deviceWidth} from '../../api/Constants';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
+import useAnimeHome from '../../api/CustomHook/useAnimeHome';
 
 const HomeSlider = React.memo(
-  ({compProp, name, handleEnd}) => {
+  ({compProp, name}) => {
     console.log('homeSlider');
     //console.log(compProp);
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const [page, setPage] = useState(1);
 
-    console.log('Homeslider');
+    const {data, loading} = useAnimeHome(
+      compProp.type,
+      compProp.sortType,
+      compProp.format,
+      page,
+    );
+
+    function handleEnd() {
+      setPage((pages) => {
+        return pages + 1;
+      });
+      console.log('handleback called');
+    }
 
     const renderItem = ({item}) => {
       // console.log('yes');
@@ -62,9 +76,23 @@ const HomeSlider = React.memo(
           showsHorizontalScrollIndicator={false}
           horizontal={true}
           onEndReached={() => handleEnd()}
-          onEndReachedThreshold={0.3}
-          data={compProp}
+          onEndReachedThreshold={0.1}
+          data={data}
           renderItem={renderItem}
+          ListFooterComponent={() =>
+            loading ? null : (
+              <ActivityIndicator
+                size="large"
+                animating
+                color="tomato"
+                style={{
+                  // justifyContent: 'center',
+                  alignItems: 'center',
+                  flex: 1,
+                }}
+              />
+            )
+          }
           keyExtractor={(item, i) => {
             return item.id.toString();
           }}

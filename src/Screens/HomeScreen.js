@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {
   View,
@@ -10,27 +10,43 @@ import {
 import HomeSlider from '../Components/Home/HomeSlider';
 import {deviceWidth, deviceHeight} from '../api/Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
-import useAnimeHome from '../api/CustomHook/useAnimeHome';
 
 import {useNavigation} from '@react-navigation/native';
 
 const HomeScreen = React.memo(() => {
   const navigation = useNavigation();
   console.log('HomeScreen1');
-  const [page, setPage] = useState(1);
-  const topAnime = useAnimeHome('ANIME', 'SCORE_DESC', 'TV', page);
-  const trendingAnime = useAnimeHome('ANIME', 'TRENDING_DESC', 'TV', page);
-  const topMovie = useAnimeHome('ANIME', 'SCORE_DESC', 'MOVIE', page);
-  const topManga = useAnimeHome('MANGA', 'FAVOURITES_DESC', 'MANGA', page);
-  const trendingMovie = useAnimeHome('ANIME', 'TRENDING_DESC', 'MOVIE', page);
-
-  const handleEnd = () => {
-    setPage((pages) => {
-      return pages + 1;
-    });
-    console.log('handleEndCalled');
+  const topAnime = {
+    type: 'ANIME',
+    sortType: 'SCORE_DESC',
+    format: 'TV',
+    page: 1,
   };
+  const trendingAnime = {
+    type: 'ANIME',
+    sortType: 'TRENDING_DESC',
+    format: 'TV',
+    page: 1,
+  };
+  const topMovie = {
+    type: 'ANIME',
+    sortType: 'SCORE_DESC',
+    format: 'MOVIE',
+    page: 1,
+  };
+  const topManga = {
+    type: 'MANGA',
+    sortType: 'FAVOURITES_DESC',
+    format: 'MANGA',
+    page: 1,
+  };
+  const trendingMovie = {
+    type: 'ANIME',
+    sortType: 'TRENDING_DESC',
+    format: 'MOVIE',
+    page: 1,
+  };
+
   return (
     <View style={styles.homeContainer}>
       <View style={styles.navbarConatiner}>
@@ -56,31 +72,11 @@ const HomeScreen = React.memo(() => {
 
       {topAnime ? (
         <ScrollView>
-          <HomeSlider
-            name={'Trending anime'}
-            compProp={trendingAnime}
-            handleEnd={handleEnd}
-          />
-          <HomeSlider
-            name={'Trending Movie'}
-            handleEnd={handleEnd}
-            compProp={trendingMovie}
-          />
-          <HomeSlider
-            name={'Top manga'}
-            handleEnd={handleEnd}
-            compProp={topManga}
-          />
-          <HomeSlider
-            name={'Top movie'}
-            handleEnd={handleEnd}
-            compProp={topMovie}
-          />
-          <HomeSlider
-            name={'Top anime'}
-            handleEnd={handleEnd}
-            compProp={topAnime}
-          />
+          <HomeSlider name={'Trending anime'} compProp={trendingAnime} />
+          <HomeSlider name={'Trending Movie'} compProp={trendingMovie} />
+          <HomeSlider name={'Top manga'} compProp={topManga} />
+          <HomeSlider name={'Top movie'} compProp={topMovie} />
+          <HomeSlider name={'Top anime'} compProp={topAnime} />
         </ScrollView>
       ) : null}
     </View>
