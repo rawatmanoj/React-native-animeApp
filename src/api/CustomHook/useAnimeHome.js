@@ -1,56 +1,21 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import {useEffect, useState} from 'react';
 
 import {TopAnime} from '../apicalls';
 
-const useAnimeHome = (page) => {
-  const [state, setState] = useState(null);
+export default function useAnimeHome(type, sort, format, page) {
+  const [state, setState] = useState([]);
   useEffect(() => {
-    console.log('useeffect');
+    console.log('customhook');
     const fetchData = async () => {
       console.log('fetchData');
 
-      const topAnime = await TopAnime('ANIME', 'SCORE_DESC', 'TV', `${page}`);
-      console.log(topAnime);
-      const topMovie = await TopAnime(
-        'ANIME',
-        'SCORE_DESC',
-        'MOVIE',
-        `${page}`,
-      );
-      const topManga = await TopAnime(
-        'MANGA',
-        'FAVOURITES_DESC',
-        'MANGA',
-        `${page}`,
-      );
-      const trendingAnime = await TopAnime(
-        'ANIME',
-        'TRENDING_DESC',
-        'TV',
-        `${page}`,
-      );
-      const trendingMovie = await TopAnime(
-        'ANIME',
-        'TRENDING_DESC',
-        'MOVIE',
-        `${page}`,
-      );
-      console.log(topAnime.Page.media);
+      const anime = await TopAnime(type, sort, format, page);
+      console.log(anime);
 
-      setState((prevstate) => {
-        return {
-          top: {
-            topAnime: [...prevstate.top.topAnime, ...topAnime],
-            topManga: [...prevstate.top.topManga, ...topManga],
-            topMovie: [...prevstate.top.topMovie, ...topMovie],
-            trendingAnime: [...prevstate.top.trendingAnime, ...trendingAnime],
-            trendingMovie: [...prevstate.top.trendingMovie, ...trendingMovie],
-          },
-        };
-      });
+      setState((prevstate) => [...prevstate, ...anime]);
     };
     fetchData();
-  }, [page]);
-};
+  }, [page, type, sort, format]);
 
-export default useAnimeHome;
+  return state;
+}

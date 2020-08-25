@@ -24,7 +24,7 @@ const HomeSlider = React.memo(
     console.log('Homeslider');
 
     const renderItem = ({item}) => {
-      console.log('yes');
+      // console.log('yes');
       return (
         <TouchableOpacity
           onPress={() => {

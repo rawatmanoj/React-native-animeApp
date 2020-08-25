@@ -11,22 +11,24 @@ import HomeSlider from '../Components/Home/HomeSlider';
 import {deviceWidth, deviceHeight} from '../api/Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {TopAnime} from '../api/apicalls';
-import useAnimeHome from '../api/apicalls';
-//import SafeAreaView from 'react-native-safe-area-view';
-// import {SafeAreaView} from 'react-navigation';
+import useAnimeHome from '../api/CustomHook/useAnimeHome';
+
 import {useNavigation} from '@react-navigation/native';
 
 const HomeScreen = React.memo(() => {
   const navigation = useNavigation();
   console.log('HomeScreen1');
-
-  // const [page,setPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const topAnime = useAnimeHome('ANIME', 'SCORE_DESC', 'TV', page);
+  const trendingAnime = useAnimeHome('ANIME', 'TRENDING_DESC', 'TV', page);
+  const topMovie = useAnimeHome('ANIME', 'SCORE_DESC', 'MOVIE', page);
+  const topManga = useAnimeHome('MANGA', 'FAVOURITES_DESC', 'MANGA', page);
+  const trendingMovie = useAnimeHome('ANIME', 'TRENDING_DESC', 'MOVIE', page);
 
   const handleEnd = () => {
-    // setPage((pages) => {
-    //   return pages + 1;
-    // });
+    setPage((pages) => {
+      return pages + 1;
+    });
     console.log('handleEndCalled');
   };
   return (
@@ -52,24 +54,33 @@ const HomeScreen = React.memo(() => {
         </View>
       </View>
 
-      {state.top.topAnime ? (
+      {topAnime ? (
         <ScrollView>
           <HomeSlider
             name={'Trending anime'}
-            compProp={state.top.trendingAnime}
+            compProp={trendingAnime}
             handleEnd={handleEnd}
           />
-          {/* <HomeSlider
+          <HomeSlider
             name={'Trending Movie'}
-            compProp={state.top.trendingMovie}
+            handleEnd={handleEnd}
+            compProp={trendingMovie}
           />
-          <HomeSlider name={'Top manga'} compProp={state.top.topManga} />
-          <HomeSlider name={'Top movie'} compProp={state.top.topMovie} />
+          <HomeSlider
+            name={'Top manga'}
+            handleEnd={handleEnd}
+            compProp={topManga}
+          />
+          <HomeSlider
+            name={'Top movie'}
+            handleEnd={handleEnd}
+            compProp={topMovie}
+          />
           <HomeSlider
             name={'Top anime'}
             handleEnd={handleEnd}
-            compProp={state.top.topAnime}
-          /> */}
+            compProp={topAnime}
+          />
         </ScrollView>
       ) : null}
     </View>
