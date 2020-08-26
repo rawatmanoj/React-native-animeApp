@@ -82,20 +82,13 @@ const HomeSlider = React.memo(
           ListFooterComponent={() =>
             loading ? null : (
               <ActivityIndicator
-                size="large"
                 animating
-                color="tomato"
-                style={{
-                  // justifyContent: 'center',
-                  alignItems: 'center',
-                  flex: 1,
-                }}
+                color={EStyleSheet.value('$spcColor')}
+                style={styles.activityIndicator}
               />
             )
           }
-          keyExtractor={(item, i) => {
-            return item.id.toString();
-          }}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
     );
@@ -127,6 +120,11 @@ const styles = EStyleSheet.create({
   },
   imageViewContainer: {
     justifyContent: 'center',
+  },
+  activityIndicator: {
+    height: '124rem',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   titleStyle: {
     fontSize: '12.5rem',
