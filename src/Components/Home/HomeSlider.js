@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useCallback} from 'react';
 import {Image} from 'react-native-elements';
 import {shortAnimeName} from '../../api/utils';
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -37,37 +37,42 @@ const HomeSlider = React.memo(
       console.log('handleback called');
     }
 
-    const renderItem = ({item}) => {
-      // console.log('yes');
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            dispatch({type: 'CURRENT_ANIME', payload: item.id});
-            // navigation.navigate('AnimeInfoScreen');
-            navigation.navigate('Home', {
-              screen: 'AnimeInfoScreen',
-            });
-          }}>
-          <Image
-            source={{uri: item.coverImage.large}}
-            style={styles.imageStyle}
-            resizeMode="cover"
-            PlaceholderContent={
-              <ActivityIndicator color={EStyleSheet.value('$spcColor')} />
-            }
-            placeholderStyle={{
-              backgroundColor: EStyleSheet.value('$shadeColor'),
-            }}
-          />
+    const renderItem = useCallback(
+      ({item}) => {
+        // console.log('yes');
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              dispatch({type: 'CURRENT_ANIME', payload: item.id});
+              // navigation.navigate('AnimeInfoScreen');
+              navigation.navigate('Home', {
+                screen: 'AnimeInfoScreen',
+              });
+            }}>
+            <Image
+              source={{uri: item.coverImage.large}}
+              style={styles.imageStyle}
+              resizeMode="cover"
+              PlaceholderContent={
+                <ActivityIndicator color={EStyleSheet.value('$spcColor')} />
+              }
+              placeholderStyle={{
+                backgroundColor: EStyleSheet.value('$shadeColor'),
+              }}
+            />
 
-          <View style={styles.titleContainer}>
-            <Text style={styles.titleStyle}>
-              {shortAnimeName(item.title.userPreferred, 20)}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
-    };
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleStyle}>
+                {shortAnimeName(item.title.userPreferred, 20)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        );
+      },
+      [dispatch, navigation],
+    );
+
+    // const renderItem =
 
     return (
       <View style={styles.container}>

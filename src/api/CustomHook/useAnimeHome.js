@@ -7,16 +7,15 @@ export default function useAnimeHome(type, sort, format, page) {
   const [state, setState] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    console.log('customhook useeffect');
+    console.log('customhook useeffects');
     const fetchData = async () => {
       setLoading(true);
       const anime = await TopAnime(type, sort, format, page);
-
       setState((prevstate) => [...prevstate, ...anime]);
       setLoading(false);
     };
     fetchData();
-  }, [page, type, sort, format]);
+  }, [type, sort, format, page]);
   console.log(state);
   return {data: state, loading};
 }
