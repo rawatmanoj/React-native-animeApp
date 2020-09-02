@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {Image} from 'react-native-elements';
 import {shortAnimeName} from '../../api/utils';
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -13,98 +13,109 @@ import {
 import {deviceHeight, deviceWidth} from '../../api/Constants';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
-import useAnimeHome from '../../api/CustomHook/useAnimeHome';
+//import useAnimeHome from '../../api/CustomHook/useAnimeHome';
+import {TopAnime} from '../../api/apicalls';
 
-const HomeSlider = React.memo(
-  ({compProp, name}) => {
-    console.log('homeSlider');
-    //console.log(compProp);
-    const dispatch = useDispatch();
-    const navigation = useNavigation();
-    const [page, setPage] = useState(1);
+const HomeSlider = React.memo(({compProp, name}) => {
+  function useAnimeHome(type, sortType, format, page) {
+    console.log('hook called');
+    const [state, setState] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const {data, loading} = useAnimeHome(
-      compProp.type,
-      compProp.sortType,
-      compProp.format,
-      page,
-    );
+    useEffect(() => {
+      console.log('customhook useeffects');
+      const fetchData = async () => {
+        console.log('fetchdata');
+        setLoading(true);
+        const anime = await TopAnime(type, sortType, format, page);
+        setState((prevstate) => [...prevstate, ...anime]);
+        setLoading(false);
+      };
 
-    function handleEnd() {
-      setPage((pages) => {
-        return pages + 1;
-      });
-      console.log('handleback called');
-    }
+      fetchData();
+    }, [type, sortType, format, page]);
+    console.log(state);
+    return {data: state, loading};
+  }
 
-    const renderItem = useCallback(
-      ({item}) => {
-        // console.log('yes');
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              dispatch({type: 'CURRENT_ANIME', payload: item.id});
-              // navigation.navigate('AnimeInfoScreen');
-              navigation.navigate('Home', {
-                screen: 'AnimeInfoScreen',
-              });
-            }}>
-            <Image
-              source={{uri: item.coverImage.large}}
-              style={styles.imageStyle}
-              resizeMode="cover"
-              PlaceholderContent={
-                <ActivityIndicator color={EStyleSheet.value('$spcColor')} />
-              }
-              placeholderStyle={{
-                backgroundColor: EStyleSheet.value('$shadeColor'),
-              }}
+  console.log('homeSlider');
+  const type = compProp.type;
+  const sortType = compProp.sortType;
+  const format = compProp.format;
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const [page, setPage] = useState(1);
+
+  const {data, loading} = useAnimeHome(type, sortType, format, page);
+
+  function handleEnd() {
+    setPage((pages) => {
+      return pages + 1;
+    });
+    console.log('handleback called');
+  }
+
+  const renderItem = useCallback(
+    ({item}) => {
+      // console.log('yes');
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            dispatch({type: 'CURRENT_ANIME', payload: item.id});
+            // navigation.navigate('AnimeInfoScreen');
+            navigation.navigate('Home', {
+              screen: 'AnimeInfoScreen',
+            });
+          }}>
+          <Image
+            source={{uri: item.coverImage.large}}
+            style={styles.imageStyle}
+            resizeMode="cover"
+            PlaceholderContent={
+              <ActivityIndicator color={EStyleSheet.value('$spcColor')} />
+            }
+            placeholderStyle={{
+              backgroundColor: EStyleSheet.value('$shadeColor'),
+            }}
+          />
+
+          <View style={styles.titleContainer}>
+            <Text style={styles.titleStyle}>
+              {shortAnimeName(item.title.userPreferred, 20)}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    },
+    [dispatch, navigation],
+  );
+
+  // const renderItem =
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.propName}>{name}</Text>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal={true}
+        onEndReached={() => handleEnd()}
+        onEndReachedThreshold={0.1}
+        data={data}
+        renderItem={renderItem}
+        ListFooterComponent={() =>
+          loading ? null : (
+            <ActivityIndicator
+              animating
+              color={EStyleSheet.value('$spcColor')}
+              style={styles.activityIndicator}
             />
-
-            <View style={styles.titleContainer}>
-              <Text style={styles.titleStyle}>
-                {shortAnimeName(item.title.userPreferred, 20)}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        );
-      },
-      [dispatch, navigation],
-    );
-
-    // const renderItem =
-
-    return (
-      <View style={styles.container}>
-        <Text style={styles.propName}>{name}</Text>
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          onEndReached={() => handleEnd()}
-          onEndReachedThreshold={0.1}
-          data={data}
-          renderItem={renderItem}
-          ListFooterComponent={() =>
-            loading ? null : (
-              <ActivityIndicator
-                animating
-                color={EStyleSheet.value('$spcColor')}
-                style={styles.activityIndicator}
-              />
-            )
-          }
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
-    );
-  },
-  (prevProps, nextProps) => {
-    if (prevProps.compProp !== nextProps.compProp) {
-      return false;
-    }
-    return true;
-  },
-);
+          )
+        }
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </View>
+  );
+});
 
 const styles = EStyleSheet.create({
   propName: {
