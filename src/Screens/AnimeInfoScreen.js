@@ -1,6 +1,13 @@
 /* eslint-disable react/self-closing-comp */
 import React, {useEffect} from 'react';
-import {View, Text, StatusBar, ActivityIndicator} from 'react-native';
+import {
+  View,
+  Text,
+  StatusBar,
+  ActivityIndicator,
+  BackHandler,
+  Alert,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Image} from 'react-native-elements';
 import {deviceHeight, deviceWidth} from '../api/Constants';
@@ -10,9 +17,11 @@ import AnimeTabView from '../Components/Home/Anime/TabView';
 import {getAnime} from '../api/apicalls';
 import {useDispatch, useSelector} from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
+import {useNavigation} from '@react-navigation/native';
 
 const AnimeInfoScreen = React.memo(() => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   console.log('AnimeInfoSCreen');
 
   const anime = useSelector((state) => state.getAnime);
@@ -29,8 +38,31 @@ const AnimeInfoScreen = React.memo(() => {
       });
     };
 
+    const backAction = () => {
+      // Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+      //   {
+      //     text: 'Cancel',
+      //     onPress: () => null,
+      //     style: 'cancel',
+      //   },
+      //   {text: 'YES', onPress: () => BackHandler.exitApp()},
+      // ]);
+      dispatch({
+        type: 'CURRENT_ANIME_INFO',
+        payload: null,
+      });
+      navigation.goBack();
+
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
     fetchData();
-  }, [anime.currentAnime, dispatch]);
+    return () => backHandler.remove();
+  }, [anime.currentAnime, dispatch, navigation]);
 
   return anime.currentAnimeInfo ? (
     <View style={styles.pageContainer}>
@@ -107,7 +139,17 @@ const AnimeInfoScreen = React.memo(() => {
       </View>
       <AnimeTabView />
     </View>
-  ) : null;
+  ) : (
+    <View
+      style={{
+        backgroundColor: EStyleSheet.value('$shadeColor'),
+        height: deviceHeight,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <ActivityIndicator size="large" color={EStyleSheet.value('$spcColor')} />
+    </View>
+  );
 });
 
 export default AnimeInfoScreen;

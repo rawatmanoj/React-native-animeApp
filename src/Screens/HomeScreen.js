@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {
   View,
@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import HomeSlider from '../Components/Home/HomeSlider';
 import {deviceWidth, deviceHeight} from '../api/Constants';
@@ -15,6 +17,26 @@ import {useNavigation} from '@react-navigation/native';
 
 const HomeScreen = React.memo(() => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want exit the app?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {text: 'YES', onPress: () => BackHandler.exitApp()},
+      ]);
+
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, []);
   console.log('HomeScreen1');
   const topAnime = {
     type: 'ANIME',
