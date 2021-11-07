@@ -1,5 +1,5 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import DiscoverScreen from '../Screens/Discover';
 import DiscoverAnime from '../Components/Discover/DiscoverAnime/DiscoverAnime';
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -8,7 +8,7 @@ import CharScreen from '../Screens/CharScreen';
 import SearchScreen from '../Screens/SearchScreen';
 import AnimeInfoScreen from '../Screens/AnimeInfoScreen';
 //import {createFluidNavigator} from 'react-navigation-fluid-transitions';
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const HomeStack = React.memo(() => {
   return (
