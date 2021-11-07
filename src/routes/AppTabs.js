@@ -9,22 +9,23 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 
 const Tabs = createBottomTabNavigator();
 
-// const getTabBarVisibility = (route) => {
-//   const routeName = route.state
-//     ? route.state.routes[route.state.index].name
-//     : '';
+const getTabBarVisibility = (route) => {
+  const routeName = route.state
+    ? route.state.routes[route.state.index].name
+    : '';
 
-//   if (
-//     routeName === 'AnimeInfoScreen' ||
-//     routeName === 'SearchScreen' ||
-//     routeName === 'DiscoverAnime' ||
-//     routeName === 'CharScreen'
-//   ) {
-//     return false;
-//   }
+  if (
+    routeName === 'HomeScreen' ||
+    routeName === 'AnimeInfoScreen' ||
+    routeName === 'SearchScreen' ||
+    routeName === 'DiscoverAnime' ||
+    routeName === 'CharScreen'
+  ) {
+    return false;
+  }
 
-//   return true;
-// };
+  return true;
+};
 const AppTabs = () => {
   console.log('AppTabs');
   return (
@@ -62,6 +63,7 @@ const AppTabs = () => {
           // options={({route}) => ({
           //   tabBarVisible: getTabBarVisibility(route),
           // })}
+
           name="Home"
           component={HomeStack}
         />

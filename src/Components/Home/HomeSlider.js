@@ -1,6 +1,6 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import {Image} from 'react-native-elements';
-import {shortAnimeName} from '../../api/utils';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Image } from 'react-native-elements';
+import { shortAnimeName } from '../../api/utils';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {
   SafeAreaView,
@@ -10,13 +10,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import {deviceHeight, deviceWidth} from '../../api/Constants';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
+import { deviceHeight, deviceWidth } from '../../api/Constants';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 //import useAnimeHome from '../../api/CustomHook/useAnimeHome';
-import {TopAnime} from '../../api/apicalls';
+import { TopAnime } from '../../api/apicalls';
 
-const HomeSlider = React.memo(({compProp, name}) => {
+const HomeSlider = React.memo(({ compProp, name }) => {
   function useAnimeHome(type, sortType, format, page) {
     console.log('hook called');
     const [state, setState] = useState([]);
@@ -28,6 +28,8 @@ const HomeSlider = React.memo(({compProp, name}) => {
         console.log('fetchdata');
         setLoading(true);
         const anime = await TopAnime(type, sortType, format, page);
+
+        console.log(anime, "animeeeeeeeeee")
         setState((prevstate) => [...prevstate, ...anime]);
         setLoading(false);
       };
@@ -35,7 +37,7 @@ const HomeSlider = React.memo(({compProp, name}) => {
       fetchData();
     }, [type, sortType, format, page]);
     console.log(state);
-    return {data: state, loading};
+    return { data: state, loading };
   }
 
   console.log('homeSlider');
@@ -46,7 +48,7 @@ const HomeSlider = React.memo(({compProp, name}) => {
   const navigation = useNavigation();
   const [page, setPage] = useState(1);
 
-  const {data, loading} = useAnimeHome(type, sortType, format, page);
+  const { data, loading } = useAnimeHome(type, sortType, format, page);
 
   function handleEnd() {
     setPage((pages) => {
@@ -56,19 +58,19 @@ const HomeSlider = React.memo(({compProp, name}) => {
   }
 
   const renderItem = useCallback(
-    ({item}) => {
+    ({ item }) => {
       // console.log('yes');
       return (
         <TouchableOpacity
           onPress={() => {
-            dispatch({type: 'CURRENT_ANIME', payload: item.id});
+            dispatch({ type: 'CURRENT_ANIME', payload: item.id });
             // navigation.navigate('AnimeInfoScreen');
             navigation.navigate('Home', {
               screen: 'AnimeInfoScreen',
             });
           }}>
           <Image
-            source={{uri: item.coverImage.large}}
+            source={{ uri: item.coverImage.large }}
             style={styles.imageStyle}
             resizeMode="cover"
             PlaceholderContent={
@@ -98,7 +100,7 @@ const HomeSlider = React.memo(({compProp, name}) => {
       <FlatList
         showsHorizontalScrollIndicator={false}
         horizontal={true}
-        onEndReached={() => handleEnd()}
+        onEndReached={handleEnd}
         onEndReachedThreshold={0.1}
         data={data}
         renderItem={renderItem}

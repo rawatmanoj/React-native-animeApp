@@ -6,7 +6,6 @@ import {
   StatusBar,
   ActivityIndicator,
   BackHandler,
-  Alert,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Image} from 'react-native-elements';

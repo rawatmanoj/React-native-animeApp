@@ -1,9 +1,9 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from '../Screens/HomeScreen';
-// import SearchScreen from '../Screens/SearchScreen';
+import SearchScreen from '../Screens/SearchScreen';
 import AnimeInfoScreen from '../Screens/AnimeInfoScreen';
-// import CharScreen from '../Screens/CharScreen';
+import CharScreen from '../Screens/CharScreen';
 const Stack = createStackNavigator();
 
 const HomeStack = React.memo(({navigation, route}) => {
@@ -17,6 +17,7 @@ const HomeStack = React.memo(({navigation, route}) => {
         headerTintColor: 'white',
         title: false,
         cardStyle: {opacity: 1},
+        // animationEnabled: false,
       }}
       initialRouteName="HomeScreen">
       <Stack.Screen
@@ -24,17 +25,17 @@ const HomeStack = React.memo(({navigation, route}) => {
         name="HomeScreen"
         component={HomeScreen}
       />
-      {/* <Stack.Screen name="CharScreen" component={CharScreen} /> */}
+      <Stack.Screen name="CharScreen" component={CharScreen} />
       <Stack.Screen
         options={{headerShown: false}}
         name="AnimeInfoScreen"
         component={AnimeInfoScreen}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         options={{headerShown: false}}
         name="SearchScreen"
         component={SearchScreen}
-      /> */}
+      />
     </Stack.Navigator>
   );
 });
