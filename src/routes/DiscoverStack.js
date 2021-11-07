@@ -10,7 +10,7 @@ import AnimeInfoScreen from '../Screens/AnimeInfoScreen';
 //import {createFluidNavigator} from 'react-navigation-fluid-transitions';
 const Stack = createNativeStackNavigator();
 
-const HomeStack = React.memo(() => {
+const DiscoverStack = React.memo(() => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -81,4 +81,4 @@ const HomeStack = React.memo(() => {
   );
 });
 
-export default HomeStack;
+export default DiscoverStack;
