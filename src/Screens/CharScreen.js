@@ -1,54 +1,48 @@
 /* eslint-disable react/self-closing-comp */
-import React, {useEffect, useState} from 'react';
-import {View, Text, StatusBar, ImageBackground} from 'react-native';
-import {Image} from 'react-native-elements';
-import {deviceHeight, deviceWidth} from '../api/Constants';
+import React from 'react';
+import { View, Text, ImageBackground, ActivityIndicator, Image } from 'react-native';
+import { deviceHeight, deviceWidth } from '../api/Constants';
 import LinearGradient from 'react-native-linear-gradient';
-import {shortAnimeName} from '../api/utils';
-import {getCharInfo} from '../api/apicalls';
-import {useSelector} from 'react-redux';
+import { shortAnimeName } from '../api/utils';
+import { getCharInfo } from '../api/apicalls';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import HTMLView from 'react-native-htmlview';
-import {ScrollView} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useQuery } from 'react-query';
+import { useRoute } from '@react-navigation/core';
 
 const CharScreen = () => {
-  const [currentChar, setCurrentChar] = useState();
-  console.log('CharScreen');
 
-  const anime = useSelector((state) => state.getAnime);
+  const { params } = useRoute();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const animeInfo = await getCharInfo(anime.char);
 
-      setCurrentChar(animeInfo.Page.characters[0]);
-    };
+  const { data: currentChar } = useQuery(['char-info', params.id], () => {
+    return getCharInfo(params.id)
+  },
+    {
+      select: (data) => {
+        return data.Page.characters[0];
+      }
+    }
+  )
 
-    fetchData();
-  }, [anime.char]);
 
   return currentChar ? (
     <View style={styles.pageContainer}>
       <View style={styles.animeContainer}>
-        <StatusBar
-          translucent
-          backgroundColor="transparent"
-          barStyle="dark-content"
-        />
-
         <View>
           <ImageBackground
-            source={{uri: currentChar.media.nodes[0].bannerImage}}
+            source={{ uri: currentChar.media.nodes[0].bannerImage }}
             style={styles.imageBackgroundStyle}
             resizeMode="cover">
             <LinearGradient
               colors={['transparent', '#2D2D2D']}
-              start={{x: 0.5, y: 0.5}}
+              start={{ x: 0.5, y: 0.5 }}
               style={styles.container1}></LinearGradient>
           </ImageBackground>
           <View style={styles.smallImage}>
             <Image
-              source={{uri: currentChar.image.large}}
+              source={{ uri: currentChar.image.large }}
               style={styles.imageStyle}
               resizeMode="contain"></Image>
           </View>
@@ -71,7 +65,20 @@ const CharScreen = () => {
         </ScrollView>
       </View>
     </View>
-  ) : null;
+  ) : (
+    <View style={styles.pageContainer}>
+      <View
+        style={{
+          backgroundColor: EStyleSheet.value('$shadeColor'),
+          height: deviceHeight,
+          justifyContent: 'center',
+          alignItems: 'center',
+
+        }}>
+        <ActivityIndicator size="large" color={EStyleSheet.value('$spcColor')} />
+      </View>
+    </View>
+  );
 };
 
 export default CharScreen;
@@ -94,12 +101,13 @@ const htmlstyles = EStyleSheet.create({
     fontSize: fontSize,
   },
 });
+
 const styles = EStyleSheet.create({
   imageBackgroundStyle: {
     width: deviceWidth,
     height: '190rem',
   },
-  rankStyles: {color: '#605D74', fontFamily: 'Lato-Bold', fontSize: '20rem'},
+  rankStyles: { color: '#605D74', fontFamily: 'Lato-Bold', fontSize: '20rem' },
   popularityContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -118,6 +126,7 @@ const styles = EStyleSheet.create({
   },
   pageContainer: {
     flex: 1,
+
   },
   smallImage: {
     // position: 'relative',

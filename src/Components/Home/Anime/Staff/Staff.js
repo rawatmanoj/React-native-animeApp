@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {
   Text,
@@ -9,29 +9,33 @@ import {
   ImageBackground,
 } from 'react-native';
 
-import {getStaff} from '../../../../api/apicalls';
-import {useSelector} from 'react-redux';
+import { getStaff } from '../../../../api/apicalls';
+import { useQuery } from 'react-query';
+import reactotron from 'reactotron-react-native';
+import { useRoute } from '@react-navigation/core';
 export default React.memo(function Staff() {
-  console.log('staff');
-  // const [state] = useContext(Context);
-  const [staff, setStaff] = useState(null);
-  const anime = useSelector((state) => state.getAnime);
-  useEffect(() => {
-    const fetchChar = async () => {
-      const staffs = await getStaff(anime.currentAnime);
-      setStaff(staffs.Media.staff.nodes);
-    };
 
-    fetchChar();
-  }, [anime.currentAnime]);
+  const { params } = useRoute();
 
-  const renderItem = ({item}) => {
+
+  const { data: staff, } = useQuery('get-staffs', () => {
+    return getStaff(params.id)
+  },
+    {
+      select: (data) => {
+        return data.Media.staff.nodes
+      }
+    }
+  )
+
+
+  const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={() => { }}>
         <View style={styles.imageContainer}>
           <View>
             <ImageBackground
-              source={{uri: item.image.medium}}
+              source={{ uri: item.image.medium }}
               style={styles.imageStyles}
               resizeMode="cover"
             />

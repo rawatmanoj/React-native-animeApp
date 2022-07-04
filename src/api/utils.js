@@ -1,6 +1,6 @@
 export const shortAnimeName = (name, size) => {
-  name = name.toLowerCase();
-  name = name.charAt(0).toUpperCase() + name.slice(1);
+  name = name?.toLowerCase();
+  name = name?.charAt(0).toUpperCase() + name?.slice(1);
   if (name.length < size) {
     return name;
   } else {

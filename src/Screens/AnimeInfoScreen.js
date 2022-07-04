@@ -1,96 +1,66 @@
 /* eslint-disable react/self-closing-comp */
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
   StatusBar,
   ActivityIndicator,
   BackHandler,
+  Image,
+  ImageBackground
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Image} from 'react-native-elements';
-import {deviceHeight, deviceWidth} from '../api/Constants';
+import { deviceHeight, deviceWidth } from '../api/Constants';
 import LinearGradient from 'react-native-linear-gradient';
-import {shortAnimeName} from '../api/utils';
+import { shortAnimeName } from '../api/utils';
 import AnimeTabView from '../Components/Home/Anime/TabView';
-import {getAnime} from '../api/apicalls';
-import {useDispatch, useSelector} from 'react-redux';
+import { getAnime } from '../api/apicalls';
+import { useDispatch, useSelector } from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery } from "react-query"
+import reactotron from 'reactotron-react-native';
 
-const AnimeInfoScreen = React.memo(() => {
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
-  console.log('AnimeInfoSCreen');
+const AnimeInfoScreen = React.memo((props) => {
+  const { params } = useRoute();
 
-  const anime = useSelector((state) => state.getAnime);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const animeInfo = await getAnime(anime.currentAnime);
+  const { isLoading, data: anime, isFetching, isError, error } = useQuery('get-anime', () => {
+    return getAnime(params.id)
+  },
+  )
 
-      console.log(animeInfo);
+  reactotron.log(props.navigation, "AnimeInfoScreen")
 
-      dispatch({
-        type: 'CURRENT_ANIME_INFO',
-        payload: animeInfo.Media,
-      });
-    };
-
-    const backAction = () => {
-      // Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-      //   {
-      //     text: 'Cancel',
-      //     onPress: () => null,
-      //     style: 'cancel',
-      //   },
-      //   {text: 'YES', onPress: () => BackHandler.exitApp()},
-      // ]);
-      dispatch({
-        type: 'CURRENT_ANIME_INFO',
-        payload: null,
-      });
-      navigation.goBack();
-
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-    fetchData();
-    return () => backHandler.remove();
-  }, [anime.currentAnime, dispatch, navigation]);
-
-  return anime.currentAnimeInfo ? (
+  return !isLoading && !isFetching && anime?.Media ? (
     <View style={styles.pageContainer}>
       <View style={styles.animeContainer}>
-        <StatusBar
+        {/* <StatusBar
           translucent
+          animated={true}
           backgroundColor="transparent"
           barStyle="dark-content"
-        />
+        /> */}
 
         <View>
-          <Image
+          <ImageBackground
             placeholderStyle={{
               backgroundColor: EStyleSheet.value('$shadeColor'),
             }}
             PlaceholderContent={
               <ActivityIndicator color={EStyleSheet.value('$spcColor')} />
             }
-            source={{uri: anime.currentAnimeInfo.bannerImage}}
+            source={{ uri: anime?.Media?.bannerImage }}
             style={styles.imageBackgroundStyle}
             resizeMode="cover">
             <LinearGradient
               colors={['transparent', '#2D2D2D']}
-              start={{x: 0.5, y: 0.5}}
+              start={{ x: 0.5, y: 0.5 }}
               style={styles.container1}></LinearGradient>
-          </Image>
+          </ImageBackground>
           <View style={styles.smallImage}>
             <Image
-              source={{uri: anime.currentAnimeInfo.coverImage.large}}
+              source={{ uri: anime?.Media?.coverImage.large }}
               style={styles.imageStyle}
               resizeMode="contain"
               PlaceholderContent={
@@ -106,14 +76,14 @@ const AnimeInfoScreen = React.memo(() => {
         <View style={styles.lowerPart}>
           <View style={styles.animeNameView}>
             <Text style={styles.animeNameStyle}>
-              {shortAnimeName(anime.currentAnimeInfo.title.userPreferred, 30)}
+              {shortAnimeName(anime?.Media?.title?.userPreferred, 30)}
             </Text>
             <Text style={styles.dateStyle}>
-              {anime.currentAnimeInfo.seasonYear
-                ? anime.currentAnimeInfo.seasonYear + ' | '
+              {anime?.Media?.seasonYear
+                ? anime?.Media?.seasonYear + ' | '
                 : null}
 
-              {anime.currentAnimeInfo.status}
+              {anime?.Media?.status}
             </Text>
           </View>
         </View>
@@ -126,27 +96,31 @@ const AnimeInfoScreen = React.memo(() => {
               color={EStyleSheet.value('$spcColor')}
             />
             <Text style={styles.scoreStyles}>
-              {anime.currentAnimeInfo.averageScore
-                ? anime.currentAnimeInfo.averageScore.toFixed(0) + '%'
+              {anime.Media?.averageScore
+                ? anime.Media?.averageScore.toFixed(0) + '%'
                 : '0%'}
             </Text>
           </View>
           <Text style={styles.rankStyles}>
-            Rank {anime.currentAnimeInfo.rankings[0].rank}
+            Rank {anime?.Media?.rankings[0]?.rank || "N/A"}
           </Text>
         </View>
+
       </View>
-      <AnimeTabView />
+      <AnimeTabView navigation={props.navigation} anime={anime} />
     </View>
   ) : (
-    <View
-      style={{
-        backgroundColor: EStyleSheet.value('$shadeColor'),
-        height: deviceHeight,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <ActivityIndicator size="large" color={EStyleSheet.value('$spcColor')} />
+    <View style={styles.pageContainer}>
+      <View
+        style={{
+          backgroundColor: EStyleSheet.value('$shadeColor'),
+          height: deviceHeight,
+          justifyContent: 'center',
+          alignItems: 'center',
+
+        }}>
+        <ActivityIndicator size="large" color={EStyleSheet.value('$spcColor')} />
+      </View>
     </View>
   );
 });
@@ -158,7 +132,7 @@ const styles = EStyleSheet.create({
     width: deviceWidth,
     height: '190rem',
   },
-  rankStyles: {color: '#605D74', fontFamily: 'Lato-Bold', fontSize: '20rem'},
+  rankStyles: { color: '#605D74', fontFamily: 'Lato-Bold', fontSize: '20rem' },
   popularityContainer: {
     alignItems: 'center',
     flexDirection: 'row',

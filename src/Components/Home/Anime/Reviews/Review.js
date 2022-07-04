@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,31 +10,37 @@ import {
 } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 
-import {getReviews} from '../../../../api/apicalls';
-import {useSelector} from 'react-redux';
+import { getReviews } from '../../../../api/apicalls';
+import { useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
+import { useRoute } from '@react-navigation/core';
+import reactotron from 'reactotron-react-native';
 export default React.memo(function Review() {
-  console.log('review');
-  const [review, setReview] = useState(null);
-  const anime = useSelector((state) => state.getAnime);
-  useEffect(() => {
-    const fetchChar = async () => {
-      console.log(anime.currentAnime);
-      const reviews = await getReviews(anime.currentAnime);
-      setReview(reviews.Media.reviews.nodes);
-      console.log(reviews);
-    };
 
-    fetchChar();
-  }, [anime.currentAnime]);
+  const { params } = useRoute();
 
-  const renderItem = ({item}) => {
+
+  const { data: review, } = useQuery('get-reviews', () => {
+    return getReviews(params.id)
+  },
+    {
+      select: (data) => {
+        return data.Media.reviews.nodes
+      }
+    }
+  )
+
+  //reactotron.log(review)
+
+
+  const renderItem = ({ item }) => {
     return (
       <View style={styles.reviewContainer}>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => { }}>
           <View style={styles.imageContainer}>
             <View>
               <ImageBackground
-                source={{uri: item.user.avatar.medium}}
+                source={{ uri: item.user.avatar.medium }}
                 style={styles.imageStyles}
                 resizeMode="cover"
               />

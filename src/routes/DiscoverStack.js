@@ -7,6 +7,8 @@ import CharTabView from '../Components/Discover/DiscoverCharacter/CharTabView';
 import CharScreen from '../Screens/CharScreen';
 import SearchScreen from '../Screens/SearchScreen';
 import AnimeInfoScreen from '../Screens/AnimeInfoScreen';
+import verticalAnimation from "../reusable/verticalAnimation"
+
 //import {createFluidNavigator} from 'react-navigation-fluid-transitions';
 const Stack = createStackNavigator();
 
@@ -18,7 +20,7 @@ const HomeStack = React.memo(() => {
       }}
       initialRouteName="DiscoverScreen">
       <Stack.Screen
-        options={{ headerShown: false }}
+        options={{ headerShown: false, ...verticalAnimation }}
         name="DiscoverScreen"
         component={DiscoverScreen}
       />
@@ -35,12 +37,14 @@ const HomeStack = React.memo(() => {
           },
 
           headerBackTitleStyle: { color: 'white' },
+          ...verticalAnimation
         })}
         // options={({route}) => ({title: route.params.title})}
         name="DiscoverAnime"
         component={DiscoverAnime}
       />
       <Stack.Screen
+
         options={{
           headerShown: true,
           title: 'Characters',
@@ -52,12 +56,13 @@ const HomeStack = React.memo(() => {
           },
 
           headerBackTitleStyle: { color: 'white' },
+          ...verticalAnimation
         }}
         name="CharTabView"
         component={CharTabView}
       />
       <Stack.Screen
-        options={{ headerShown: false, animationEnabled: false }}
+        options={{ headerShown: false, animationEnabled: false, ...verticalAnimation }}
         name="SearchScreen"
         component={SearchScreen}
       />
@@ -67,12 +72,13 @@ const HomeStack = React.memo(() => {
           headerTransparent: true,
           headerTintColor: 'white',
           title: false,
+          ...verticalAnimation
         }}
         name="CharScreen"
         component={CharScreen}
       />
       <Stack.Screen
-        options={{ headerShown: false }}
+        options={{ headerShown: false, ...verticalAnimation }}
         name="AnimeInfoScreen"
         component={AnimeInfoScreen}
       />

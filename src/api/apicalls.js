@@ -1,13 +1,71 @@
-export const TopAnime = async (type = 'ANIME', sortType, format, page) => {
+import reactotron from "reactotron-react-native";
+
+let url = 'https://graphql.anilist.co';
+let options = (query) => {
+  return {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      query: query,
+      //variables: variables,
+    }),
+  };
+}
+
+export const UpcomingNextSeason = async (type = 'ANIME', sortType, format, page = 1, season, seasonYear) => {
+  let formatText = format ? `format: ${format}` : ``
+
+  let query = `
+  {
+    Page(page: ${page}, perPage: 20) {
+      
+     media(type:${type},sort: ${sortType},${formatText},season:${season},seasonYear:${seasonYear}) {
+         
+          idMal
+          id
+          averageScore
+          title {
+              userPreferred
+        }
+       coverImage {
+        large
+         medium
+         
+       }
+      
+      }
+     pageInfo {
+       total
+       perPage
+       currentPage
+       lastPage
+       hasNextPage
+     }
+    }
+  }
+`;
+  const response = await fetch(url, options(query));
+  const res = await response.json();
+  return res.data.Page;
+};
+
+
+export const TopAnime = async (type = 'ANIME', sortType, format, page = 1) => {
+  let formatText = format ? `format: ${format}` : ``
   let query = `
 {
   
-  Page(page: ${page}, perPage: 20) {
+  Page(page: ${page}, perPage: 50) {
     
-   media(type: ${type},sort: ${sortType},format: ${format}) {
+   media(type: ${type},sort: ${sortType},${formatText}) {
 
         idMal
         id
+        averageScore
+        
         title {
             userPreferred
         
@@ -20,28 +78,20 @@ export const TopAnime = async (type = 'ANIME', sortType, format, page) => {
      }
     
     }
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
   }
 }
 
 `;
-
-  // Define the config we'll need for our Api request
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        //variables: variables,
-      }),
-    };
-
-  const response = await fetch(url, options);
+  const response = await fetch(url, options(query));
   const res = await response.json();
-  return res.data.Page.media;
+  return res.data.Page;
 };
 
 export const getAnime = async (id) => {
@@ -52,6 +102,10 @@ export const getAnime = async (id) => {
         idMal
         format
         type
+        tags {
+          id
+          name
+        }
         studios {
           nodes {
             id
@@ -79,7 +133,32 @@ export const getAnime = async (id) => {
           day
         }
         genres
-      
+        recommendations(page:1,perPage:60,sort:RATING_DESC) {
+    
+          edges {
+            node {
+              id
+             rating
+              mediaRecommendation{
+                id
+                title {
+                  romaji
+                  english
+                  native
+                  userPreferred
+                }
+                bannerImage
+                coverImage {
+                  extraLarge
+                  large
+                  medium
+                  color
+                }
+              }
+            }
+          
+          }
+        }
         
        
         rankings {
@@ -103,26 +182,9 @@ export const getAnime = async (id) => {
   
   `;
 
-  // Define our query variables and values that will be used in the query request
-  //   var variables = {
-  //     sort: sortType,
-  //   };
 
-  // Define the config we'll need for our Api request
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        // variables: variables,
-      }),
-    };
 
-  const response = await fetch(url, options);
+  const response = await fetch(url, options(query));
   const res = await response.json();
   return res.data;
 };
@@ -159,21 +221,8 @@ export const getChar = async (id) => {
   //     sort: sortType,
   //   };
 
-  // Define the config we'll need for our Api request
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        // variables: variables,
-      }),
-    };
 
-  const response = await fetch(url, options);
+  const response = await fetch(url, options(query));
   const res = await response.json();
   return res.data;
 };
@@ -205,23 +254,14 @@ export const getStaff = async (id) => {
   
   `;
 
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        // variables: variables,
-      }),
-    };
 
-  const response = await fetch(url, options);
+
+
+  const response = await fetch(url, options(query));
   const res = await response.json();
   return res.data;
 };
+
 
 export const getReviews = async (id) => {
   let query = `
@@ -259,34 +299,102 @@ export const getReviews = async (id) => {
   
   `;
 
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        // variables: variables,
-      }),
-    };
 
-  const response = await fetch(url, options);
+
+  const response = await fetch(url, options(query));
   const res = await response.json();
   return res.data;
 };
 
-export const searchAnime = async (search, type) => {
+
+export const getRecommendations = async (id, page) => {
   let query = `
   {
-    Page( page: 1, perPage: 50) {
+    Media(id: ${id}) {
+     
+   recommendations(page:${page},perPage:20,sort:RATING_DESC) {
+      
+          edges {
+            node {
+              id
+             rating
+              mediaRecommendation{
+                id
+                averageScore
+                title {
+                  romaji
+                  english
+                  native
+                  userPreferred
+                }
+                bannerImage
+                coverImage {
+                  extraLarge
+                  large
+                  medium
+                  color
+                }
+              }
+            }
+          
+          }
+          pageInfo {
+            total
+            perPage
+            currentPage
+            lastPage
+            hasNextPage
+          }
+  }
+     
+      
+    }
+  }
+  
+  
+  `;
 
-    
-      media(search: "${search}",sort:POPULARITY_DESC,type:${type}) {
-   
+
+
+  const response = await fetch(url, options(query));
+  const res = await response.json();
+  return res.data;
+};
+
+
+
+
+
+export const searchAnime = async (search, type = "ANIME", season, page = 1, sort = "POPULARITY_DESC", format, status) => {
+  reactotron.log(format, "formattttt")
+  let seasonText = "";
+  let searchText = "";
+  let formatText = "";
+  let statusText = "";
+
+  if (status) {
+    statusText = `status:${status}`
+  }
+
+  if (season) {
+    seasonText = `season:${season}`
+  }
+
+  if (search) {
+    searchText = `search:"${search}"`
+  }
+
+  if (format?.length > 0) {
+    formatText = `format:${format}`
+  }
+
+  let query = `
+  {
+    Page( page: ${page}, perPage: 50) {    
+      media(${searchText},type:${type},${seasonText},sort:${sort},${formatText},${statusText}) {
            idMal
            id
+           averageScore
            title {
                userPreferred        
          }
@@ -297,28 +405,45 @@ export const searchAnime = async (search, type) => {
         }
        
        }
+       pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
      }
   }
   
   `;
 
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        // variables: variables,
-      }),
-    };
 
-  const response = await fetch(url, options);
+
+  const response = await fetch(url, options(query));
   const res = await response.json();
   return res.data;
 };
+
+export const getTagsAndGenres = async () => {
+  let query = `
+    {
+      genres: GenreCollection
+      tags: MediaTagCollection {
+        name
+        description
+        category
+        isAdult
+      }
+    }  
+    `;
+
+
+  const response = await fetch(url, options(query));
+  const res = await response.json();
+  return res.data;
+};
+
+
 
 export const getCharInfo = async (id) => {
   let query = `
@@ -360,20 +485,9 @@ export const getCharInfo = async (id) => {
   `;
 
   // Define the config we'll need for our Api request
-  var url = 'https://graphql.anilist.co',
-    options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-        //variables: variables,
-      }),
-    };
 
-  const response = await fetch(url, options);
+
+  const response = await fetch(url, options(query));
   const res = await response.json();
   return res.data;
 };

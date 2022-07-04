@@ -1,6 +1,6 @@
-import React, {useState, useCallback} from 'react';
-import {View, Text} from 'react-native';
-import {deviceWidth} from './Constants';
+import React, { useState, useCallback } from 'react';
+import { View, Text } from 'react-native';
+import { deviceWidth } from './Constants';
 export const Description = (props) => {
   const [textShown, setTextShown] = useState(false); //To show ur remaining Text
   const [lengthMore, setLengthMore] = useState(false); //to show the "Read more & Less Line"

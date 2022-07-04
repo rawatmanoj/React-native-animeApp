@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -6,41 +6,45 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-import {getChar} from '../../../../api/apicalls';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useSelector, useDispatch} from 'react-redux';
+import { getChar } from '../../../../api/apicalls';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector, useDispatch } from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery } from 'react-query';
 export default React.memo(function Characters() {
   console.log('characters');
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { params } = useRoute();
+
   // const [state] = useContext(Context);
-  const [char, setChar] = useState(null);
-  const anime = useSelector((state) => state.getAnime);
-  useEffect(() => {
-    const fetchChar = async () => {
-      const characters = await getChar(anime.currentAnime);
-      setChar(characters.Media.characters.nodes);
-    };
+  // const [char, setChar] = useState(null);
 
-    fetchChar();
-  }, [anime.currentAnime]);
+  const { data: char, } = useQuery('get-chars', () => {
+    return getChar(params.id)
+  },
+    {
+      select: (data) => {
+        return data.Media.characters.nodes
+      }
+    }
+  )
 
-  const renderItem = ({item}) => {
+
+
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          dispatch({
-            type: 'CHAR',
-            payload: item.id,
+          navigation.navigate('CharScreen', {
+            id: item.id,
           });
-          navigation.navigate('CharScreen');
         }}>
         <View style={styles.imageContainer}>
           <View>
             <ImageBackground
-              source={{uri: item.image.medium}}
+              source={{ uri: item.image.medium }}
               style={styles.imageStyles}
               resizeMode="cover"
             />

@@ -1,58 +1,76 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, View, ScrollView} from 'react-native';
-import {Button} from 'react-native-elements';
-import {deviceWidth} from '../../../../api/Constants';
-import {filterString} from '../../../../api/utils';
-import {Description} from '../../../../api/Description';
-import {useSelector} from 'react-redux';
+import { Text, View, ScrollView, Button } from 'react-native';
+import { deviceWidth } from '../../../../api/Constants';
+import { filterString } from '../../../../api/utils';
+import { Description } from '../../../../api/Description';
+import { useSelector } from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
-export default React.memo(function About() {
+import { useQuery } from 'react-query';
+import { getAnime } from '../../../../api/apicalls';
+import { useRoute } from '@react-navigation/core';
+import reactotron from 'reactotron-react-native';
+export default React.memo(function About(props) {
   console.log('about');
 
-  const anime = useSelector((state) => state.getAnime);
+  let anime = props.anime;
 
   return (
     <ScrollView style={styles.scene}>
-      {anime.currentAnimeInfo ? (
+      {anime.Media ? (
         <View>
           <View>
-            {anime.currentAnimeInfo.description ? (
+            {anime.Media.description ? (
               <Description
-                text={filterString(anime.currentAnimeInfo.description)}
+                text={filterString(anime.Media.description)}
               />
             ) : null}
           </View>
           <View>
             <Text style={styles.subHeading}>Genres</Text>
             <View style={styles.boxStyle}>
-              {anime.currentAnimeInfo.genres.map((genre, i) => {
-                if (i < 7) {
-                  return (
+              {anime.Media.genres.map((genre, i) => {
+                // if (i < 7) {
+                return (
+                  <View key={i} style={{ margin: 4 }}>
                     <Button
                       key={i}
-                      buttonStyle={{
-                        backgroundColor: EStyleSheet.value('$shadeColor'),
-                        margin: 4,
-                      }}
+                      color={EStyleSheet.value('$shadeColor')}
                       title={genre}
                     />
-                  );
-                }
+                  </View>
+                );
+                // }
               })}
             </View>
             <Text style={styles.subHeading}>Producers</Text>
             <View style={styles.boxStyle}>
-              {anime.currentAnimeInfo.studios.nodes.map((studio, i) => {
+              {anime.Media.studios.nodes.map((studio, i) => {
                 return (
-                  <Button
-                    key={i}
-                    buttonStyle={{
-                      backgroundColor: EStyleSheet.value('$shadeColor'),
-                      margin: 4,
-                    }}
-                    title={studio.name}
-                  />
+                  <View style={{ margin: 4 }}>
+
+                    <Button
+                      key={i}
+                      color={EStyleSheet.value('$shadeColor')}
+                      title={studio.name}
+                    />
+                  </View>
+
+                );
+              })}
+            </View>
+            <Text style={styles.subHeading}>Tags</Text>
+            <View style={styles.boxStyle}>
+              {anime.Media.tags.map((tag, i) => {
+                return (
+                  <View style={{ margin: 4 }}>
+                    <Button
+                      color={EStyleSheet.value('$shadeColor')}
+                      key={i}
+                      title={tag.name}
+                    />
+                  </View>
+
                 );
               })}
             </View>
@@ -61,63 +79,63 @@ export default React.memo(function About() {
             <Text style={styles.animeInfoHeader}>Anime Info</Text>
             <View style={styles.subAnimeInfoContainer}>
               <Text style={styles.subAnimeInfoHeading}>Original Title</Text>
-              <View style={{width: deviceWidth / 2.1}}>
+              <View style={{ width: deviceWidth / 2.1 }}>
                 <Text style={styles.titleStyles}>
-                  {anime.currentAnimeInfo.title.userPreferred}
+                  {anime.Media.title.userPreferred}
                 </Text>
               </View>
             </View>
             <View style={styles.subAnimeInfoContainer}>
               <Text style={styles.subAnimeInfoHeading}>First Air Date</Text>
-              <View style={{width: deviceWidth / 2.1}}>
+              <View style={{ width: deviceWidth / 2.1 }}>
                 <Text style={styles.titleStyles}>
-                  {anime.currentAnimeInfo.startDate.day +
+                  {anime.Media.startDate.day +
                     ' - ' +
-                    anime.currentAnimeInfo.startDate.month +
+                    anime.Media.startDate.month +
                     ' - ' +
-                    anime.currentAnimeInfo.startDate.year}
+                    anime.Media.startDate.year}
                 </Text>
               </View>
             </View>
             <View style={styles.subAnimeInfoContainer}>
               <Text style={styles.subAnimeInfoHeading}>Last Air Date</Text>
-              <View style={{width: deviceWidth / 2.1}}>
+              <View style={{ width: deviceWidth / 2.1 }}>
                 <Text style={styles.titleStyles}>
-                  {anime.currentAnimeInfo.endDate.day
-                    ? anime.currentAnimeInfo.endDate.day +
-                      ' - ' +
-                      anime.currentAnimeInfo.endDate.month +
-                      ' - ' +
-                      anime.currentAnimeInfo.endDate.year
+                  {anime.Media.endDate.day
+                    ? anime.Media.endDate.day +
+                    ' - ' +
+                    anime.Media.endDate.month +
+                    ' - ' +
+                    anime.Media.endDate.year
                     : 'Ongoing'}
                 </Text>
               </View>
             </View>
             <View style={styles.subAnimeInfoContainer}>
               <Text style={styles.subAnimeInfoHeading}>Aired Episodes</Text>
-              <View style={{width: deviceWidth / 2.1}}>
+              <View style={{ width: deviceWidth / 2.1 }}>
                 <Text style={styles.titleStyles}>
-                  {anime.currentAnimeInfo.episodes
-                    ? anime.currentAnimeInfo.episodes
+                  {anime.Media.episodes
+                    ? anime.Media.episodes
                     : 'Ongoing'}
                 </Text>
               </View>
             </View>
             <View style={styles.subAnimeInfoContainer}>
               <Text style={styles.subAnimeInfoHeading}>Country of origin</Text>
-              <View style={{width: deviceWidth / 2.1}}>
+              <View style={{ width: deviceWidth / 2.1 }}>
                 <Text style={styles.titleStyles}>
-                  {anime.currentAnimeInfo.countryOfOrigin === 'JP'
+                  {anime.Media.countryOfOrigin === 'JP'
                     ? 'JAPAN'
-                    : anime.currentAnimeInfo.countryOfOrigin}
+                    : anime.Media.countryOfOrigin}
                 </Text>
               </View>
             </View>
             <View style={styles.subAnimeInfoContainer}>
               <Text style={styles.subAnimeInfoHeading}>Average Score</Text>
-              <View style={{width: deviceWidth / 2.1}}>
+              <View style={{ width: deviceWidth / 2.1 }}>
                 <Text style={styles.titleStyles}>
-                  {anime.currentAnimeInfo.averageScore}
+                  {anime.Media.averageScore}
                 </Text>
               </View>
             </View>
@@ -147,7 +165,7 @@ const styles = EStyleSheet.create({
     overflow: 'visible',
     flexWrap: 'wrap',
   },
-  animeInfoContainer: {marginTop: '12rem', marginBottom: '10rem'},
+  animeInfoContainer: { marginTop: '12rem', marginBottom: '10rem' },
   animeInfoHeader: {
     color: 'white',
     fontSize: '22rem',
@@ -167,5 +185,5 @@ const styles = EStyleSheet.create({
     fontSize: '16rem',
     fontFamily: 'Lato-Bold',
   },
-  titleStyles: {color: '#EAE4E4', fontFamily: 'Lato-Bold', fontSize: '14rem'},
+  titleStyles: { color: '#EAE4E4', fontFamily: 'Lato-Bold', fontSize: '14rem' },
 });

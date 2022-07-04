@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {
   View,
@@ -8,41 +8,52 @@ import {
   StatusBar,
   BackHandler,
   Alert,
+  Linking,
 } from 'react-native';
 import HomeSlider from '../Components/Home/HomeSlider';
-import {deviceWidth, deviceHeight} from '../api/Constants';
+import { deviceWidth, deviceHeight } from '../api/Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
+import reactotron from 'reactotron-react-native';
 
-const HomeScreen = React.memo(() => {
+
+
+const HomeScreen = React.memo(({ route }) => {
   const navigation = useNavigation();
+  // const route = useRoute();
 
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you sure you want exit the app?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {text: 'YES', onPress: () => BackHandler.exitApp()},
-      ]);
 
-      return true;
-    };
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-    return () => backHandler.remove();
-  }, []);
-  console.log('HomeScreen1');
+
   const topAnime = {
     type: 'ANIME',
     sortType: 'SCORE_DESC',
     format: 'TV',
     page: 1,
+  };
+  const allTimePopular = {
+    type: 'ANIME',
+    sortType: 'POPULARITY_DESC',
+    format: 'TV',
+    page: 1,
+  };
+  const upcomingNextSeason = {
+    type: 'ANIME',
+    sortType: 'POPULARITY_DESC',
+    format: 'TV',
+    page: 1,
+    season: 'WINTER',
+    seasonYear: 2022
+  };
+  const popularThisSeason = {
+    type: 'ANIME',
+    sortType: 'POPULARITY_DESC',
+    format: '',
+    page: 1,
+    season: 'FALL',
+    seasonYear: 2021
   };
   const trendingAnime = {
     type: 'ANIME',
@@ -70,13 +81,20 @@ const HomeScreen = React.memo(() => {
   };
 
   return (
-    <View style={styles.homeContainer}>
+    <SafeAreaView style={styles.homeContainer}>
       <View style={styles.navbarConatiner}>
-        <Text style={styles.appName}>animenation</Text>
+        <Text
+          onPress={() => {
+            Linking.openURL('https://anilist.co/api/v2/oauth/authorize?client_id=7141&response_type=token').then(res => {
+              reactotron.log(res, "DeepLinkinggggggggg")
+            })
+          }}
+          style={styles.appName}>animenation</Text>
         <View style={styles.searchContainer}>
           <StatusBar
             backgroundColor={EStyleSheet.value('$baseColor')}
             barStyle="light-content"
+          // backgroundColor="transparent"
           />
           <TouchableOpacity
             onPress={() => {
@@ -91,17 +109,18 @@ const HomeScreen = React.memo(() => {
           </TouchableOpacity> */}
         </View>
       </View>
+      <ScrollView>
+        <HomeSlider name={'Upcoming Next Season'} compProp={upcomingNextSeason} />
+        <HomeSlider name={'Popular This Season'} compProp={popularThisSeason} />
+        <HomeSlider name={'Trending anime'} compProp={trendingAnime} />
+        <HomeSlider name={'Trending Movie'} compProp={trendingMovie} />
+        <HomeSlider name={'All Time Popular'} compProp={allTimePopular} />
+        <HomeSlider name={'Top manga'} compProp={topManga} />
+        <HomeSlider name={'Top movie'} compProp={topMovie} />
+        <HomeSlider name={'Top anime'} compProp={topAnime} />
+      </ScrollView>
 
-      {topAnime ? (
-        <ScrollView>
-          <HomeSlider name={'Trending anime'} compProp={trendingAnime} />
-          <HomeSlider name={'Trending Movie'} compProp={trendingMovie} />
-          <HomeSlider name={'Top manga'} compProp={topManga} />
-          <HomeSlider name={'Top movie'} compProp={topMovie} />
-          <HomeSlider name={'Top anime'} compProp={topAnime} />
-        </ScrollView>
-      ) : null}
-    </View>
+    </SafeAreaView>
   );
 });
 
@@ -132,7 +151,7 @@ const styles = EStyleSheet.create({
     width: deviceWidth,
     height: deviceHeight * 0.1,
     backgroundColor: '$baseColor',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.9,
     shadowRadius: 4,
     elevation: 5,

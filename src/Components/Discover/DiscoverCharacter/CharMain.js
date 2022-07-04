@@ -5,29 +5,25 @@ import {
   FlatList,
   TouchableOpacity,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import {useDispatch} from 'react-redux';
-import {useNavigation} from '@react-navigation/native';
-export default function Characters({result}) {
-  console.log('charMain');
+import { useNavigation } from '@react-navigation/native';
+import { deviceHeight } from '../../../api/Constants';
+export default function Characters({ result, isLoading, isFetchingNextPage, fetchNextPage }) {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('CharScreen');
-          dispatch({
-            type: 'CHAR',
-            payload: item.id,
+          navigation.navigate('CharScreen', {
+            id: item.id,
           });
         }}>
         <View style={styles.imageContainer}>
           <View>
             <ImageBackground
-              source={{uri: item.image.medium}}
+              source={{ uri: item.image.medium }}
               style={styles.imageStyles}
               resizeMode="cover"
             />
@@ -41,24 +37,57 @@ export default function Characters({result}) {
     );
   };
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        showsHorizontalScrollIndicator={false}
-        data={result}
-        renderItem={renderItem}
-        keyExtractor={(item) => {
-          return item.id.toString();
-        }}
-      />
-    </SafeAreaView>
+    !isLoading ?
+
+      <View style={styles.pageContainer}>
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          horizontal={false}
+          onEndReached={fetchNextPage}
+          onEndReachedThreshold={20}
+          data={result}
+          renderItem={renderItem}
+          ListFooterComponent={() =>
+            !isFetchingNextPage ? null : (
+              <ActivityIndicator
+                animating
+                size="large"
+                color={EStyleSheet.value('$spcColor')}
+                style={styles.activityIndicator}
+              />
+            )
+          }
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.flatlist}
+          numColumns={1}
+        />
+      </View>
+      :
+
+      <View style={styles.pageContainer}>
+        <View
+          style={{
+            backgroundColor: EStyleSheet.value('$shadeColor'),
+            height: deviceHeight,
+            justifyContent: 'center',
+            alignItems: 'center',
+
+          }}>
+          <ActivityIndicator size="large" color={EStyleSheet.value('$spcColor')} />
+        </View>
+      </View>
   );
 }
 
 const styles = EStyleSheet.create({
   scene: {},
+  pageContainer: {
+    flex: 1,
+    backgroundColor: '$shadeColor'
+  },
   container: {
     flex: 1,
-    backgroundColor: '$baseColor',
+    //backgroundColor: '$baseColor',
   },
   imageContainer: {
     marginBottom: '35rem',

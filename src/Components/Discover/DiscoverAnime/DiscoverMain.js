@@ -1,35 +1,45 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
-import {Image} from 'react-native-elements';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image, ImageBackground } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 //import {u} from "@react-navigation/bottom-tabs"
 
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import {shortAnimeName} from '../../../api/utils';
-import {deviceWidth, deviceHeight} from '../../../api/Constants';
+import { shortAnimeName } from '../../../api/utils';
+import { deviceWidth, deviceHeight } from '../../../api/Constants';
 
-export default React.memo(function DiscoverMain({result}) {
+export default React.memo(function DiscoverMain({ isLoading, result, fetchNextPage, isFetchingNextPage, navigation }) {
   console.log('DiscoverMain');
   const dispatch = useDispatch();
 
   const navigate = useNavigation();
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          dispatch({type: 'CURRENT_ANIME', payload: item.id});
+          dispatch({ type: 'CURRENT_ANIME', payload: item.id });
           navigate.navigate('AnimeInfoScreen');
           // console.log(navigate);
         }}>
-        <Image
-          source={{uri: item.coverImage.large}}
+        <ImageBackground
+          source={{ uri: item.coverImage.large }}
           style={styles.imageStyle}
           resizeMode="cover"
-        />
+          PlaceholderContent={
+            <ActivityIndicator color={EStyleSheet.value('$spcColor')} />
+          }
+          placeholderStyle={{
+            // backgroundColor: 'red'
+            backgroundColor: EStyleSheet.value('$shadeColor'),
+          }}
+        >
+          <View style={styles.ratingFloater}>
+            <Text style={styles.floatingText}>{item?.averageScore || 0}%</Text>
+          </View>
+        </ImageBackground>
 
         <View style={styles.titleContainer}>
           <Text style={styles.titleStyle}>
@@ -41,22 +51,78 @@ export default React.memo(function DiscoverMain({result}) {
   };
   return (
     <View style={styles.pageContainer}>
-      <FlatList
-        style={styles.flatlist}
-        scrollEventThrottle={1900}
-        data={result}
-        numColumns={3}
-        horizontal={false}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index}
-      />
+
+      {!isLoading ? result.length > 0 ?
+
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          horizontal={false}
+          onEndReached={fetchNextPage}
+          onEndReachedThreshold={20}
+          data={result}
+          renderItem={renderItem}
+          ListFooterComponent={() =>
+            !isFetchingNextPage ? null : (
+              <ActivityIndicator
+                animating
+                size="large"
+                color={EStyleSheet.value('$spcColor')}
+                style={styles.activityIndicator}
+              />
+            )
+          }
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.flatlist}
+          numColumns={3}
+        />
+        :
+
+        <Text style={styles.emptyText}>No Data Found</Text>
+        :
+
+        <View
+          style={{
+            backgroundColor: EStyleSheet.value('$shadeColor'),
+            height: deviceHeight,
+            justifyContent: 'center',
+            alignItems: 'center',
+
+          }}>
+          <ActivityIndicator size="large" color={EStyleSheet.value('$spcColor')} />
+        </View>
+      }
     </View>
+
   );
 });
 
 const styles = EStyleSheet.create({
   pageContainer: {
     flex: 1,
+
+  },
+  floatingText: {
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  emptyText: {
+    color: 'white',
+    textAlign: 'center',
+    marginTop: deviceHeight * 0.4,
+    fontWeight: 'bold'
+  },
+  ratingFloater: {
+
+    backgroundColor: 'black',
+    borderRadius: 10,
+    opacity: 0.8,
+    right: 4,
+    top: 4,
+    position: 'absolute',
+    width: deviceWidth * 0.08,
+    height: deviceWidth * 0.04
   },
   imageStyle: {
     height: '124rem',
@@ -80,8 +146,13 @@ const styles = EStyleSheet.create({
     paddingTop: '55rem',
     flex: 1,
     paddingBottom: 100,
-    backgroundColor: '#242634',
+    backgroundColor: '$baseColor',
     width: deviceWidth,
     paddingLeft: '10rem',
+  },
+  activityIndicator: {
+    height: '124rem',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

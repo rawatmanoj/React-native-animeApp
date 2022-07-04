@@ -1,14 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, Dimensions, SafeAreaView} from 'react-native';
-import {TabView, TabBar} from 'react-native-tab-view';
+import { Text, Dimensions, SafeAreaView } from 'react-native';
+import { TabView, TabBar } from 'react-native-tab-view';
 import EStyleSheet from 'react-native-extended-stylesheet';
 //import SafeAreaView from 'react-native-safe-area-view';
 import TabViewScreen from './TabViewScreen';
+import reactotron from 'reactotron-react-native';
 
 const renderTabBar = (props) => (
   <TabBar
-    renderLabel={({route, focused, color}) => (
+    renderLabel={({ route, focused, color }) => (
       <Text
         style={{
           color,
@@ -23,34 +24,34 @@ const renderTabBar = (props) => (
     )}
     tabStyle={styles.tabStyles}
     scrollEnabled={true}
-    onTabPress={({route, preventDefault}) => {
+    onTabPress={({ route, preventDefault }) => {
       if (route.key === 'first') {
         // preventDefault();
         // Do something else
       }
     }}
     {...props}
-    indicatorStyle={{backgroundColor: EStyleSheet.value('$baseColor')}}
+    indicatorStyle={{ backgroundColor: EStyleSheet.value('$baseColor') }}
     style={styles.tabBar}
   />
 );
 
-const initialLayout = {width: Dimensions.get('window').width};
+const initialLayout = { width: Dimensions.get('window').width };
 
 export default React.memo(function DiscoverAnime(props) {
   console.log('DiscoverAnime');
   const format = props.route.params.format;
   const type = props.route.params.type;
-
+  // reactotron.log(props.navigation, "props.navigationnn")
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    {key: 'NowPlaying', title: 'Now Playing'},
-    {key: 'UpComing', title: 'Upcoming'},
-    {key: 'Trending', title: 'Trending'},
-    {key: 'Popular', title: 'Popular'},
+    { key: 'NowPlaying', title: 'Now Playing' },
+    { key: 'UpComing', title: 'Upcoming' },
+    { key: 'Trending', title: 'Trending' },
+    { key: 'Popular', title: 'Popular' },
   ]);
 
-  const renderScene = ({route}) => {
+  const renderScene = ({ route }) => {
     switch (route.key) {
       case 'NowPlaying':
         return (
@@ -59,6 +60,8 @@ export default React.memo(function DiscoverAnime(props) {
             sortType={'POPULARITY_DESC'}
             format={format}
             status={'RELEASING'}
+            name={route.key}
+            navigation={props.navigation}
           />
         );
       case 'UpComing':
@@ -68,6 +71,8 @@ export default React.memo(function DiscoverAnime(props) {
             sortType={'POPULARITY_DESC'}
             format={format}
             status={'NOT_YET_RELEASED'}
+            name={route.key}
+            navigation={props.navigation}
           />
         );
       case 'Trending':
@@ -77,6 +82,8 @@ export default React.memo(function DiscoverAnime(props) {
             sortType={'TRENDING_DESC'}
             format={format}
             status={'FINISHED'}
+            name={route.key}
+            navigation={props.navigation}
           />
         );
       case 'Popular':
@@ -86,6 +93,8 @@ export default React.memo(function DiscoverAnime(props) {
             sortType={'POPULARITY_DESC'}
             format={format}
             status={'FINISHED'}
+            name={route.key}
+            navigation={props.navigation}
           />
         );
       default:
@@ -96,7 +105,7 @@ export default React.memo(function DiscoverAnime(props) {
     <SafeAreaView style={styles.scene}>
       <TabView
         lazy={true}
-        navigationState={{index, routes}}
+        navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={initialLayout}
