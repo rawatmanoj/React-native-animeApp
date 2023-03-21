@@ -11,7 +11,6 @@ import { shortAnimeName } from '../../../api/utils';
 import { deviceWidth, deviceHeight } from '../../../api/Constants';
 
 export default React.memo(function DiscoverMain({ isLoading, result, fetchNextPage, isFetchingNextPage, navigation }) {
-  console.log('DiscoverMain');
   const dispatch = useDispatch();
 
   const navigate = useNavigation();

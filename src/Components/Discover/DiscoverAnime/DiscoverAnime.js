@@ -39,7 +39,6 @@ const renderTabBar = (props) => (
 const initialLayout = { width: Dimensions.get('window').width };
 
 export default React.memo(function DiscoverAnime(props) {
-  console.log('DiscoverAnime');
   const format = props.route.params.format;
   const type = props.route.params.type;
   // reactotron.log(props.navigation, "props.navigationnn")

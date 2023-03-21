@@ -58,8 +58,7 @@ const HomeSlider = React.memo(({ compProp, name }) => {
 
   const renderItem = useCallback(
     ({ item }) => {
-      console.log("------------------");
-      console.log(item);
+
 
       {
         return item.media.map((innerItem) => {
@@ -71,9 +70,12 @@ const HomeSlider = React.memo(({ compProp, name }) => {
               onPress={() => {
                 //  dispatch({ type: 'CURRENT_ANIME', payload: item.id });
                 // navigation.navigate('AnimeInfoScreen');
-                navigation.navigate('AnimeInfoScreen', {
+                // navigation.navigate('AnimeInfoScreen', {
+                //   id: innerItem.id,
+                // });
+                navigation.push('AnimeInfoScreen', {
                   id: innerItem.id,
-                });
+                })
               }}>
 
               <ImageBackground

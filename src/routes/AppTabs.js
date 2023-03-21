@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import DiscoverStack from './DiscoverStack';
+import ProfileStack from './ProfileStack';
 import HomeStack from './HomeStack';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import { View, SafeAreaView } from "react-native";
@@ -13,23 +14,7 @@ import linking from "../linking"
 
 const Tabs = createBottomTabNavigator();
 
-const getTabBarVisibility = (route) => {
-  const routeName = route.state
-    ? route.state.routes[route.state.index].name
-    : '';
 
-  if (
-    // routeName === 'HomeScreen' ||
-    // routeName === 'AnimeInfoScreen' ||
-    routeName === 'SearchScreen'
-    // routeName === 'DiscoverAnime' ||
-    // routeName === 'CharScreen'
-  ) {
-    return false;
-  }
-
-  return true;
-};
 const AppTabs = () => {
   console.log('AppTabs');
   return (
@@ -46,8 +31,9 @@ const AppTabs = () => {
                 return <AntDesign name={'home'} size={size} color={color} />;
               } else if (route.name === 'DiscoverStack') {
                 return <Ionicons name={'flask'} size={size} color={color} />;
+              } else if (route.name === 'ProfileStack') {
+                return <Ionicons name={'person-circle-outline'} size={size} color={color} />;
               }
-
               return <Ionicons name={iconName} size={size} color={color} />;
             },
           })}
@@ -87,6 +73,10 @@ const AppTabs = () => {
 
             name="DiscoverStack"
             component={DiscoverStack}
+          />
+          <Tabs.Screen
+            name="ProfileStack"
+            component={ProfileStack}
           />
         </Tabs.Navigator>
       </NavigationContainer>

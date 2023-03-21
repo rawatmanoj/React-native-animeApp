@@ -29,7 +29,7 @@ import reactotron from 'reactotron-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCharacters, getStaffs } from '../api/Discoverapicalls/DiscoverApicall';
 
-export default React.memo(function SearchScreen(props) {
+export default function SearchScreen(props) {
   const [value, setValue] = useState({
     data: null,
     isHistoryToggle: false
@@ -461,7 +461,7 @@ export default React.memo(function SearchScreen(props) {
       </View>
     </View>
   );
-});
+};
 
 const styles = EStyleSheet.create({
   pageContainer: {

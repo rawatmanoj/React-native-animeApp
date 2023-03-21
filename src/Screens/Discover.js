@@ -1,14 +1,13 @@
 /* eslint-disable react/self-closing-comp */
 import * as React from 'react';
-import {View, Text, TouchableHighlight, ImageBackground} from 'react-native';
+import { View, Text, TouchableHighlight, ImageBackground } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
-import {deviceWidth} from '../api/Constants';
-import {useNavigation} from '@react-navigation/native';
+import { deviceWidth } from '../api/Constants';
+import { useNavigation } from '@react-navigation/native';
 export default function Discover() {
-  console.log('discover');
   const navigation = useNavigation();
   return (
     <View style={styles.scene}>

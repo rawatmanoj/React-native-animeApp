@@ -25,12 +25,11 @@ const AnimeInfoScreen = React.memo((props) => {
   const { params } = useRoute();
 
 
-  const { isLoading, data: anime, isFetching, isError, error } = useQuery('get-anime', () => {
+  const { isLoading, data: anime, isFetching, isError, error } = useQuery(['get-anime', params.id], () => {
     return getAnime(params.id)
   },
   )
 
-  reactotron.log(props.navigation, "AnimeInfoScreen")
 
   return !isLoading && !isFetching && anime?.Media ? (
     <View style={styles.pageContainer}>

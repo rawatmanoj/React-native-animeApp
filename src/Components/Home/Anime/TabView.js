@@ -37,7 +37,6 @@ const renderTabBar = (props) => (
 const initialLayout = { width: Dimensions.get('window').width };
 
 export default React.memo(function AnimeTabView(props) {
-  console.log('animeTabView');
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'about', title: 'About' },

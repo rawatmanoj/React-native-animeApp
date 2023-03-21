@@ -12,8 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQuery } from 'react-query';
-export default React.memo(function Characters() {
-  console.log('characters');
+export default function Characters() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { params } = useRoute();
@@ -69,7 +68,7 @@ export default React.memo(function Characters() {
       />
     </SafeAreaView>
   );
-});
+};
 
 const styles = EStyleSheet.create({
   scene: {},

@@ -14,14 +14,14 @@ import HomeSlider from '../Components/Home/HomeSlider';
 import { deviceWidth, deviceHeight } from '../api/Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import reactotron from 'reactotron-react-native';
 
 
 
-const HomeScreen = React.memo(({ route }) => {
+const HomeScreen = ({ route }) => {
   const navigation = useNavigation();
   // const route = useRoute();
 
@@ -86,7 +86,7 @@ const HomeScreen = React.memo(({ route }) => {
         <Text
           onPress={() => {
             Linking.openURL('https://anilist.co/api/v2/oauth/authorize?client_id=7141&response_type=token').then(res => {
-              reactotron.log(res, "DeepLinkinggggggggg")
+              console.log(res, "DeepLinkinggggggggg")
             })
           }}
           style={styles.appName}>animenation</Text>
@@ -122,7 +122,7 @@ const HomeScreen = React.memo(({ route }) => {
 
     </SafeAreaView>
   );
-});
+};
 
 const styles = EStyleSheet.create({
   homeContainer: {

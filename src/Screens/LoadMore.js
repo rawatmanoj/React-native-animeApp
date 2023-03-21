@@ -12,7 +12,7 @@ import reactotron from 'reactotron-react-native';
 
 
 
-export default React.memo(function DiscoverMain() {
+export default function DiscoverMain() {
   const navigation = useNavigation();
   const { params: { type, sortType, format, name, season, seasonYear } } = useRoute();
 
@@ -149,7 +149,7 @@ export default React.memo(function DiscoverMain() {
         </View>
       </View>
   );
-});
+}
 
 const styles = EStyleSheet.create({
   pageContainer: {

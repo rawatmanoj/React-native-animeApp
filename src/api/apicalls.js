@@ -15,6 +15,7 @@ let options = (query) => {
   };
 }
 
+
 export const UpcomingNextSeason = async (type = 'ANIME', sortType, format, page = 1, season, seasonYear) => {
   let formatText = format ? `format: ${format}` : ``
 

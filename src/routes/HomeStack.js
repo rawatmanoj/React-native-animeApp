@@ -8,14 +8,14 @@ import { Linking, SafeAreaView } from "react-native";
 import verticalAnimation from "../reusable/verticalAnimation"
 import LoadMore from '../Screens/LoadMore';
 import reactotron from 'reactotron-react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
 const HomeStack = React.memo(({ navigation, route }) => {
 
   const redirectLinkPage = (linkURL) => {
-    reactotron.log('AppLink=>>>', linkURL);
-    reactotron.log(route, "routeeeeee")
+
 
   }
 
@@ -25,13 +25,13 @@ const HomeStack = React.memo(({ navigation, route }) => {
     Linking.getInitialURL().then((url) => {
       // reactotron.log('AppLink=>>>', url);
       redirectLinkPage(url);
-    }).catch(err => reactotron.error('An error occurred', err));
+    }).catch(err => console.error('An error occurred', err));
 
 
   }, []);
 
 
-  reactotron.log(route, navigation, 'HomeStack');
+
   return (
     <SafeAreaView style={{ flex: 1, }}>
       <Stack.Navigator

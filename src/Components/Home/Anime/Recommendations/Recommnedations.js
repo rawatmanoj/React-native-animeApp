@@ -17,6 +17,7 @@ export default React.memo(function Recommendations(props) {
     const navigation = useNavigation();
     const { params } = useRoute();
 
+
     const fetchData = ({ pageParam = 1 }) => {
         return getRecommendations(params.id, pageParam);
     }
@@ -35,7 +36,7 @@ export default React.memo(function Recommendations(props) {
 
 
 
-    const { data: result, isLoading, fetchNextPage, isFetchingNextPage } = useInfiniteQuery('recommendations',
+    const { data: result, isLoading, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(['recommendations', params.id],
         fetchData,
         {
             select: transformData,
@@ -60,28 +61,9 @@ export default React.memo(function Recommendations(props) {
             <TouchableOpacity
                 style={{}}
                 onPress={() => {
-                    //AnimeInfoScreen
-                    reactotron.log("clicked", innerItem.node.id)
-                    // props.navigation.navigate({
-                    //     routeName: 'AnimeInfoScreen',
-                    //     params: {
-                    //         id: innerItem.node.id,
-                    //     },
-                    //     key: innerItem.node.id,  // value is ScreenA-test
-                    // });
-                    // useNavigation().navigate('AnimeInfoScreen', {
-                    //     id: innerItem.node.id,
-                    // });
-
-
-                    // navigation.navigate('Home', {
-                    //     screen: 'AnimeInfoScreen',
-                    //     params: {
-                    //         id: innerItem.node.id,
-                    //     },
-                    //     key: innerItem.node.id,
-                    // })
-
+                    navigation.push('AnimeInfoScreen', {
+                        id: innerItem.node.mediaRecommendation.id,
+                    })
 
                 }}
 

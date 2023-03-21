@@ -11,7 +11,6 @@ import { getAnime } from '../../../../api/apicalls';
 import { useRoute } from '@react-navigation/core';
 import reactotron from 'reactotron-react-native';
 export default React.memo(function About(props) {
-  console.log('about');
 
   let anime = props.anime;
 
